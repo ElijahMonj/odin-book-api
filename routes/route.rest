@@ -1,0 +1,32 @@
+GET http://localhost:3000/users
+
+###
+
+GET http://localhost:3000/users/63ad60c04496c9514c0cf815
+
+###
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "firstName":"Elijah",
+    "lastName": "Monjardin",
+    "email":"monjardinelijah121@gmail.com",
+    "password": "123qwe",
+    "birthDay":"August 7, 2002"
+   
+}
+
+###
+
+DELETE http://localhost:3000/users/63ad6220eaf53a6001a49f19
+
+###
+
+PATCH http://localhost:3000/users/63ad6220eaf53a6001a49f19
+Content-Type: application/json
+
+{
+    "name": "New Name"
+}
