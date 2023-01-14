@@ -17,6 +17,10 @@ router.get('/:id', getUser,(req,res)=>{
     res.json(res.user)
 })
 
+router.get('/:id/posts', getUser,(req,res)=>{
+    res.json(res.user.posts)
+})
+
 router.post('/', async (req,res)=>{
     const user=new User({
         firstName:req.body.firstName,
@@ -40,12 +44,13 @@ router.post('/', async (req,res)=>{
 
 })
 
+
 router.patch('/:id', getUser, async (req,res)=>{
-    if(req.body.firstName!=null){
-        res.user.firstName=req.body.firstName
+    if(req.body.email!=null){
+        res.user.email=req.body.email
     }
-    if(req.body.lastName!=null){
-        res.user.lastName=req.body.lastName
+    if(req.body.password!=null){
+        res.user.password=req.body.password
     }
 
     try {
@@ -56,6 +61,41 @@ router.patch('/:id', getUser, async (req,res)=>{
     }
 })
 
+router.patch('/:id/newPost', getUser, async (req,res)=>{
+    
+    console.log("----------------------------------")
+    console.log("PATCHING "+req.params.id)
+    console.log(req.body.author)
+    console.log(req.body.date)
+    console.log(req.body.caption)
+    console.log(req.body.comments)
+    console.log(req.body.likes)
+    console.log(req.body.picture)
+    console.log("-----------------------------------")
+    
+    const newPost = {
+        author: req.body.author,
+        date: req.body.date,
+        caption: req.body.caption,
+        comments: req.body.comments,
+        likes: req.body.likes,
+        picture: req.body.picture
+    }
+    console.log(res.user.posts)
+    let currentPosts=res.user.posts;
+    currentPosts.unshift(newPost);
+    
+    console.log("New comment "+currentPosts)
+    res.user.posts=currentPosts;
+
+    try {
+        const updatedUser = await res.user.save()
+        res.json(updatedUser)
+    } catch (err) {
+        res.status(400).json({message: err.message})
+    }
+})
+//ADD POST
 router.delete('/:id', getUser, async(req,res)=>{
    try {
        await res.user.remove()

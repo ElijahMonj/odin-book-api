@@ -15,18 +15,39 @@ Content-Type: application/json
     "email":"monjardinelijah121@gmail.com",
     "password": "123qwe",
     "birthDay":"August 7, 2002"
-   
 }
 
 ###
 
-DELETE http://localhost:3000/users/63ad6220eaf53a6001a49f19
+DELETE http://localhost:3000/users/63bb7498b15cc4ec4e94f532
 
 ###
 
-PATCH http://localhost:3000/users/63ad6220eaf53a6001a49f19
+PATCH http://localhost:3000/users/63c2061cc2ca46fbac5c4530
 Content-Type: application/json
 
 {
-    "name": "New Name"
+    "email":"changedemail@gmail.com",
+    "password":"newpass"
 }
+
+###
+
+GET http://localhost:3000/users/63c2061cc2ca46fbac5c4530/posts
+
+###
+
+PATCH http://localhost:3000/users/63c2061cc2ca46fbac5c4530/newPost
+Content-Type: application/json
+
+{
+    "author":"Elijah M.",
+    "date":"Jan 14 9:04 AM",
+    "caption":"Lorem fucking Ipsum",
+    "comments":"test",
+    "likes":"test",
+    "picture":"https://img.freepik.com/free-photo/lovely-pet-portrait-isolated_23-2149192357.jpg?w=1380&t=st=1673658419~exp=1673659019~hmac=0b6eb014a7e270eba7d39d77eabbaed83a47d2f62d829203ebd53e43ac1a027f"
+
+}
+
+###
