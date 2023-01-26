@@ -2,7 +2,7 @@ GET http://localhost:3000/users
 
 ###
 
-GET http://localhost:3000/users/63ad60c04496c9514c0cf815
+GET http://localhost:3000/users/63d1c5ccef704ae2f5298c94
 
 ###
 
@@ -19,11 +19,11 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/users/63bb7498b15cc4ec4e94f532
+DELETE http://localhost:3000/users/63d1b91e5073ea1cfd7a1561
 
 ###
 
-PATCH http://localhost:3000/users/63c2061cc2ca46fbac5c4530
+PATCH http://localhost:3000/users/63d1b4dfb88158d066f68329
 Content-Type: application/json
 
 {
@@ -33,21 +33,40 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/users/63c2061cc2ca46fbac5c4530/posts
+GET http://localhost:3000/users/63d1c5ccef704ae2f5298c94/posts
 
 ###
 
-PATCH http://localhost:3000/users/63c2061cc2ca46fbac5c4530/newPost
+PATCH http://localhost:3000/users/63d1c5ccef704ae2f5298c94/newPost
 Content-Type: application/json
 
 {
     "author":"Elijah M.",
     "date":"Jan 14 9:04 AM",
-    "caption":"Lorem fucking Ipsum",
-    "comments":"test",
+    "caption":"New Post",
+    "comments":[],
     "likes":"test",
     "picture":"https://img.freepik.com/free-photo/lovely-pet-portrait-isolated_23-2149192357.jpg?w=1380&t=st=1673658419~exp=1673659019~hmac=0b6eb014a7e270eba7d39d77eabbaed83a47d2f62d829203ebd53e43ac1a027f"
 
+}
+
+###
+
+GET http://localhost:3000/users/63d1c5ccef704ae2f5298c94/posts/0
+
+###
+
+DELETE http://localhost:3000/users/63d1c5ccef704ae2f5298c94/posts/0
+
+###
+
+PATCH http://localhost:3000/users/63d1c5ccef704ae2f5298c94/posts/0/newComment
+Content-Type: application/json
+
+{
+    "name":"Trisha M.",
+    "date":"Jan 14 9:04 AM",
+    "content":"Wow!!!"
 }
 
 ###
