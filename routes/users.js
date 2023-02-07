@@ -1,42 +1,62 @@
+if(process.env.NODE_ENV !== 'production'){
+    require('dotenv').config()
+}
+const LocalStrategy=require('passport-local').Strategy
 const express=require('express')
 const user = require('../models/user')
 const router =express.Router()
 const User=require('../models/user')
 const jwt=require('jsonwebtoken')
 const { verify } = require('jsonwebtoken')
+const session = require("express-session");
+const passport = require("passport");
+const bcrypt=require('bcrypt')
+const initializePassport=require('./passport-config')
+const flash=require('express-flash')
 
-router.post('/login', (req,res)=>{
-    const user={
-    
-    email:"monjardinelijah121@gmail.com"
-    
+
+initializePassport(
+    passport,
+    async function email(){
+    const users = await User.find()
+    console.log('Initializing passport....')
+    return users.find(user=>user.email===email)
+})
+
+
+router.use(express.urlencoded({extended:false}))
+router.use(flash())
+router.use(session({
+    secret:process.env.SESSION_SECRET,
+    resave:false,
+    saveUninitialized:false
+}))
+router.use(passport.initialize())
+router.use(passport.session())
+
+
+
+router.post('/login',passport.authenticate('local',{
+    successRedirect:'/',
+    failureRedirect:'/login',
+    failureFlash:true
+}))
+
+
+router.get('/' , async (req,res)=>{
+
+    let account="no account";
+    console.log("Logged in as: "+account)
+    try {
+        const users= await User.find()
+        res.json(users)
+    } catch (err) {
+        res.status(500).json({message : err.message})
     }
-
-    jwt.sign({user:user},'secretkey',(err,token)=>{
-        res.json({
-            token:token
-        })
-    });
-});
-router.get('/', verifyToken ,async (req,res)=>{
-
-    jwt.verify(req.token,'secretkey',async (err,authData)=>{
-        console.log(authData)
-        if(err){
-            res.sendStatus(403)
-        }else{
-            try {
-                const users= await User.find()
-                res.json(users)
-            } catch (err) {
-                res.status(500).json({message : err.message})
-            }
-        }
-    })
 
 })
 //GET ALL USERS
-router.get('/:id', getUser, verifyToken,(req,res)=>{
+router.get('/:id', getUser,(req,res)=>{
     res.json(res.user)
 })
 //GET SPECIFIC USER
@@ -81,29 +101,34 @@ router.patch('/:id/posts/:postIndex/newComment', getUser,async(req,res)=>{
     
 })
 //WRITE NEW COMMENT
-router.post('/', async (req,res)=>{
-    const user=new User({
-        firstName:req.body.firstName,
-        lastName: req.body.lastName,
-        email:req.body.email,
-        password: req.body.password,
-        birthDay:req.body.birthDay,
-        defaultProfile: "https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg",
-        bio:"Add Bio",
-        friends: [],
-        friendRequests:[],
-        posts: []
-    })
+router.post('/register', async (req,res)=>{
+
     try {
-        const newUser =await user.save()
-        res.status(201).json(newUser)
-    } catch (err) {
-        res.status(400).json({message: err.message})
+        let hashedPassword = await bcrypt.hash(req.body.password,10)
+        const user=new User({
+            firstName:req.body.firstName,
+            lastName: req.body.lastName,
+            email:req.body.email,
+            password: hashedPassword,
+            birthDay:req.body.birthDay,
+            defaultProfile: "https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg",
+            bio:"Add Bio",
+            friends: [],
+            friendRequests:[],
+            posts: []
+        })
+        try {
+            const newUser =await user.save()
+            res.status(201).json(newUser)
+        } catch (err) {
+            res.status(400).json({message: err.message})
+        }
+        
+    } catch (error) {
+        res.send('Error on saving password.')
     }
-
-
 })
-//CREATE NEW USER
+//CREATE NEW USER/SIGN-UP
 
 router.patch('/:id', getUser, async (req,res)=>{
     if(req.body.email!=null){
@@ -183,8 +208,6 @@ router.delete('/:id', getUser, async(req,res)=>{
    }
 })
 //DELETE USER
- 
-
 
 async function getUser(req,res,next){
     let user
@@ -215,4 +238,6 @@ function verifyToken(req,res,next){
 }
 
 
+
+//PASSPORT
 module.exports =router

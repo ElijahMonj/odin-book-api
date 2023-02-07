@@ -6,7 +6,7 @@ GET http://localhost:3000/users/63d1c5ccef704ae2f5298c94
 
 ###
 
-POST http://localhost:3000/users
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
@@ -19,7 +19,17 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/users/63d1b91e5073ea1cfd7a1561
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+    "email":"monjardinelijah121@gmail.com",
+    "password": "123qwe"
+}
+
+###
+
+DELETE http://localhost:3000/users/63e1e974ae0c9c7467ac7dd9
 
 ###
 
