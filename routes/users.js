@@ -13,6 +13,7 @@ const passport = require("passport");
 const bcrypt=require('bcrypt')
 const initializePassport=require('./passport-config')
 const flash=require('express-flash')
+const { redirect } = require('express/lib/response')
 
 /*
 initializePassport(
@@ -84,12 +85,13 @@ router.get('/logout',checkAuthenticated,(req,res)=>{
       });
 })
 
-router.post('/login',passport.authenticate('local',{
-    successRedirect:'/users',
-    failureRedirect:'/login',
-    //failureFlash:true
-}))
-
+router.post('/login',passport.authenticate('local',redirects),
+function(req, res) {
+    // Explicitly save the session before redirecting!
+    req.session.save(() => {
+      res.redirect('/success');
+    })
+  });
 
 router.get('/' , checkAuthenticated,async (req,res)=>{
 
