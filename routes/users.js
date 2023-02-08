@@ -14,13 +14,56 @@ const bcrypt=require('bcrypt')
 const initializePassport=require('./passport-config')
 const flash=require('express-flash')
 
-
+/*
 initializePassport(
     passport,
     async function email(){
     const users = await User.find()
     console.log('Initializing passport....')
     return users.find(user=>user.email===email)
+})
+*/
+const authenticateUser=async(email,password,done)=>{
+    const user = await User.findOne({ email: email });
+    console.log("Before If")
+    if(user==null){
+        console.log("No user with that email")
+        return done(null, false, {message:"No user with that email"})
+    }
+
+    try {
+        if(await bcrypt.compare(password,user.password)){
+            console.log("---------THE SUCCESS----------")
+            console.log(user)
+            console.log(password)
+            console.log(user.password)
+            console.log("---------THE SUCCESS----------")
+            return done(null,user)
+        }else{
+            console.log("Wrong password.")
+            return done(null,false,{message:"password incorrect"})
+        }
+    } catch (error) {
+        return done(error)
+    }
+
+}
+passport.use(new LocalStrategy({usernameField:'email' },authenticateUser))
+passport.serializeUser((user,done)=> {
+    console.log(user.id)
+    done(null,user.id)
+    }
+)
+passport.deserializeUser((id,done)=>{
+    console.log("Deserializing user...")
+    console.log(id)
+    try {
+        User.findById(id, function(err, user) {
+            done(err, user);
+          }); 
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 
@@ -34,18 +77,23 @@ router.use(session({
 router.use(passport.initialize())
 router.use(passport.session())
 
-
+router.get('/logout',checkAuthenticated,(req,res)=>{
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        res.redirect('/');
+      });
+})
 
 router.post('/login',passport.authenticate('local',{
-    successRedirect:'/',
+    successRedirect:'/users',
     failureRedirect:'/login',
-    failureFlash:true
+    //failureFlash:true
 }))
 
 
-router.get('/' , async (req,res)=>{
+router.get('/' , checkAuthenticated,async (req,res)=>{
 
-    let account="no account";
+    let account=req.user.email;
     console.log("Logged in as: "+account)
     try {
         const users= await User.find()
@@ -56,21 +104,21 @@ router.get('/' , async (req,res)=>{
 
 })
 //GET ALL USERS
-router.get('/:id', getUser,(req,res)=>{
+router.get('/:id',checkAuthenticated,getUser,(req,res)=>{
     res.json(res.user)
 })
 //GET SPECIFIC USER
-router.get('/:id/posts', getUser,(req,res)=>{
+router.get('/:id/posts',getUser,(req,res)=>{
     res.json(res.user.posts)
 })
 //GET ALL POSTS FROM A USER
-router.get('/:id/posts/:postIndex', getUser,(req,res)=>{
+router.get('/:id/posts/:postIndex',checkAuthenticated,getUser,(req,res)=>{
     let postID=req.params.postIndex
     console.log(postID)
     res.json(res.user.posts[postID])
 })
 //GET SPECIFIC POST
-router.patch('/:id/posts/:postIndex/newComment', getUser,async(req,res)=>{
+router.patch('/:id/posts/:postIndex/newComment',checkAuthenticated, getUser,async(req,res)=>{
     
     let postID=req.params.postIndex
     console.log(res.user.posts)
@@ -130,7 +178,7 @@ router.post('/register', async (req,res)=>{
 })
 //CREATE NEW USER/SIGN-UP
 
-router.patch('/:id', getUser, async (req,res)=>{
+router.patch('/:id', checkAuthenticated,getUser, async (req,res)=>{
     if(req.body.email!=null){
         res.user.email=req.body.email
     }
@@ -146,7 +194,7 @@ router.patch('/:id', getUser, async (req,res)=>{
     }
 })
 //UPDATE USER CREDENTIALS
-router.patch('/:id/newPost', getUser, async (req,res)=>{
+router.patch('/:id/newPost',checkAuthenticated,getUser, async (req,res)=>{
     
     console.log("----------------------------------")
     console.log("PATCHING "+req.params.id)
@@ -181,7 +229,7 @@ router.patch('/:id/newPost', getUser, async (req,res)=>{
     }
 })
 //ADD POST
-router.delete('/:id/posts/:postIndex', getUser, async (req,res)=>{
+router.delete('/:id/posts/:postIndex',checkAuthenticated,getUser, async (req,res)=>{
     
     let postID=req.params.postIndex
     
@@ -199,7 +247,7 @@ router.delete('/:id/posts/:postIndex', getUser, async (req,res)=>{
     }
 })
 //DELETE POST
-router.delete('/:id', getUser, async(req,res)=>{
+router.delete('/:id',checkAuthenticated,getUser, async(req,res)=>{
    try {
        await res.user.remove()
        res.json({message: 'Deleted User'})
@@ -237,7 +285,19 @@ function verifyToken(req,res,next){
     }
 }
 
-
+function checkAuthenticated(req,res,next){
+  
+    if(req.isAuthenticated()){
+        return next()
+    }
+    res.json({message: 'Please log in'})
+}
+function checkNotAuthenticated(req,res,next){
+    if(req.isAuthenticated()){
+        res.send('log out first')
+    }
+    next()
+}
 
 //PASSPORT
 module.exports =router

@@ -20,4 +20,4 @@ app.set("views", __dirname);
 
 app.use(express.urlencoded({ extended: false }));
 
-app.listen(3000, ()=>console.log("Server Started"))
+app.listen(3001, ()=>console.log("Server Started"))

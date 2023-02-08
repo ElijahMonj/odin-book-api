@@ -29,7 +29,7 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/users/63e1e974ae0c9c7467ac7dd9
+DELETE http://localhost:3000/users/63e1e99dae0c9c7467ac7de1
 
 ###
 
@@ -80,3 +80,5 @@ Content-Type: application/json
 }
 
 ###
+
+GET http://localhost:3000/users/logout
