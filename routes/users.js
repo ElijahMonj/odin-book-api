@@ -34,11 +34,7 @@ const authenticateUser=async(email,password,done)=>{
 
     try {
         if(await bcrypt.compare(password,user.password)){
-            console.log("---------THE SUCCESS----------")
-            console.log(user)
-            console.log(password)
-            console.log(user.password)
-            console.log("---------THE SUCCESS----------")
+           
             return done(null,user)
         }else{
             console.log("Wrong password.")
@@ -85,12 +81,23 @@ router.get('/logout',checkAuthenticated,(req,res)=>{
       });
 })
 
-router.post('/login',passport.authenticate('local',redirects),
-function(req, res) {
-    // Explicitly save the session before redirecting!
-    req.session.save(() => {
-      res.redirect('/success');
-    })
+router.post('/login', (req, res, next) => {
+    passport.authenticate('local', (err, user) => {
+      if (err) {
+        console.log('error on userController.js post /login err', err);
+        return err;
+      }
+      console.log('user', user);
+      if (!user) {
+        return res.redirect('/login');
+      }
+      req.logIn(user, (logInErr) => {
+        if (logInErr) {
+          console.log('error on userController.js post /login logInErr', logInErr); return logInErr;
+        }
+        req.session.save(() => res.redirect('/users'));
+      });
+    })(req, res, next);
   });
 
 router.get('/' , checkAuthenticated,async (req,res)=>{
