@@ -171,7 +171,59 @@ router.get('/:id',verifyToken,getUser,async(req,res)=>{
         } 
     })
 })
+
 //GET SPECIFIC USER
+router.patch('/addfollowing/:id/:tofollow/',getUser,async(req,res)=>{
+    jwt.verify(req.token,'secretkey',async (err,authData)=>{
+        if(err){
+            res.sendStatus(403) 
+        }else{    
+
+            if(req.body.tofollow!=null){
+                if(res.user.following.includes(req.body.tofollow)){
+                    console.log("Already following.")        
+                }else{
+                    console.log("Following new user.")
+                    let currentFollowing=res.user.following
+                    currentFollowing.push(req.body.tofollow)
+                    res.user.following=currentFollowing
+                }  
+                try {
+                    const updatedUser = await res.user.save()
+                    res.json(updatedUser)
+                } catch (err) {
+                    res.status(400).json({message: err.message})
+                }
+            }
+        } 
+    })
+})
+router.patch('/addfollowers/:id/:followby/',getUser,async(req,res)=>{
+    jwt.verify(req.token,'secretkey',async (err,authData)=>{
+        if(err){
+            res.sendStatus(403) 
+        }else{    
+
+            if(req.body.followby!=null){
+                if(res.user.followers.includes(req.body.followby)){
+                    console.log("Already following.")        
+                }else{
+                    console.log("Following new user.")
+                    let currentFollowers=res.user.followers
+                    currentFollowers.push(req.body.followby)
+                    res.user.followers=currentFollowers
+                }  
+                try {
+                    const updatedUser = await res.user.save()
+                    res.json(updatedUser)
+                } catch (err) {
+                    res.status(400).json({message: err.message})
+                }
+            }
+        } 
+    })
+})
+//FOLLOW
 router.get('/:id/posts',verifyToken,getUser,async(req,res)=>{
     jwt.verify(req.token,'secretkey',async (err,authData)=>{
         if(err){
@@ -251,7 +303,7 @@ router.post('/register', async (req,res)=>{
         }
         
     } catch (error) {
-        res.send('Error on saving password.')
+        res.send('Error.')
     }
 })
 //CREATE NEW USER/SIGN-UP
@@ -334,17 +386,6 @@ router.delete('/:id',verifyToken,getUser, async(req,res)=>{
    }
 })
 //DELETE USER
-
-
-
-
-
-
-
-
-
-
-
 
 
 

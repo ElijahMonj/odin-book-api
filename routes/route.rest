@@ -82,3 +82,12 @@ Content-Type: application/json
 ###
 
 GET http://localhost:3002/users/logout
+
+###
+
+PATCH http://localhost:3002/users/63e49ce25fa6ad8ead6edddb/63ea0028a3fdf1719a0b5f85
+Content-Type: application/json
+
+{
+    "tofollow":"63ea0028a3fdf1719a0b5f85"
+}
