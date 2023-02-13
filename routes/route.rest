@@ -1,12 +1,12 @@
-GET http://localhost:3000/users
+GET http://localhost:3002/users
 
 ###
 
-GET http://localhost:3000/users/63d1c5ccef704ae2f5298c94
+GET http://localhost:3002/users/63e1e99dae0c9c7467ac7de1
 
 ###
 
-POST http://localhost:3000/users/register
+POST http://localhost:3002/users/register
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/users/login
+POST http://localhost:3002/users/login
 Content-Type: application/json
 
 {
@@ -29,11 +29,11 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/users/63e1e99dae0c9c7467ac7de1
+DELETE http://localhost:3002/users/63e49a145fa6ad8ead6eddd2
 
 ###
 
-PATCH http://localhost:3000/users/63d1b4dfb88158d066f68329
+PATCH http://localhost:3002/users/63d1b4dfb88158d066f68329
 Content-Type: application/json
 
 {
@@ -43,11 +43,11 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/users/63d1c5ccef704ae2f5298c94/posts
+GET http://localhost:3002/users/63d1c5ccef704ae2f5298c94/posts
 
 ###
 
-PATCH http://localhost:3000/users/63d1c5ccef704ae2f5298c94/newPost
+PATCH http://localhost:3002/users/63d1c5ccef704ae2f5298c94/newPost
 Content-Type: application/json
 
 {
@@ -62,15 +62,15 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/users/63d1c5ccef704ae2f5298c94/posts/0
+GET http://localhost:3002/users/63d1c5ccef704ae2f5298c94/posts/0
 
 ###
 
-DELETE http://localhost:3000/users/63d1c5ccef704ae2f5298c94/posts/0
+DELETE http://localhost:3002/users/63d1c5ccef704ae2f5298c94/posts/0
 
 ###
 
-PATCH http://localhost:3000/users/63d1c5ccef704ae2f5298c94/posts/0/newComment
+PATCH http://localhost:3002/users/63d1c5ccef704ae2f5298c94/posts/0/newComment
 Content-Type: application/json
 
 {
@@ -81,4 +81,4 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/users/logout
+GET http://localhost:3002/users/logout

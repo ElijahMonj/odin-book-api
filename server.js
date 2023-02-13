@@ -19,5 +19,5 @@ app.set("views", __dirname);
 
 
 app.use(express.urlencoded({ extended: false }));
-const port=process.env.PORT || 3001
+const port=process.env.PORT || 3002
 app.listen(port, ()=>console.log("Server Started at port "+port))

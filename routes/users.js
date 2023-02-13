@@ -1,6 +1,8 @@
 if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 }
+const axios = require('axios');
+const cookieParser = require('cookie-parser')
 const LocalStrategy=require('passport-local').Strategy
 const express=require('express')
 const user = require('../models/user')
@@ -14,8 +16,19 @@ const bcrypt=require('bcrypt')
 const initializePassport=require('./passport-config')
 const flash=require('express-flash')
 const { redirect } = require('express/lib/response')
-
+router.use(express.urlencoded({extended:false}))
 /*
+router.use(flash())
+router.use(cookieParser('secret'))
+router.use(session({
+    secret:"secret",
+    resave:true,
+    saveUninitialized:false
+}))
+router.use(passport.initialize())
+router.use(passport.session())
+
+
 initializePassport(
     passport,
     async function email(){
@@ -24,6 +37,8 @@ initializePassport(
     return users.find(user=>user.email===email)
 })
 */
+
+/*
 const authenticateUser=async(email,password,done)=>{
     const user = await User.findOne({ email: email });
     console.log("Before If")
@@ -62,25 +77,20 @@ passport.deserializeUser((id,done)=>{
         console.log(error)
     }
 })
+*/
 
 
-router.use(express.urlencoded({extended:false}))
-router.use(flash())
-router.use(session({
-    secret:process.env.SESSION_SECRET,
-    resave:false,
-    saveUninitialized:false
-}))
-router.use(passport.initialize())
-router.use(passport.session())
+router.get('/logout',(req,res)=>{
 
-router.get('/logout',checkAuthenticated,(req,res)=>{
+
+    /*
     req.logout(function(err) {
         if (err) { return next(err); }
         res.redirect('/');
       });
+    */
 })
-
+/*
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user) => {
       if (err) {
@@ -95,39 +105,98 @@ router.post('/login', (req, res, next) => {
         if (logInErr) {
           console.log('error on userController.js post /login logInErr', logInErr); return logInErr;
         }
-        req.session.save(() => res.redirect('/users'));
+        req.session.save(() => {
+            
+            res.redirect('/users')
+        });
       });
     })(req, res, next);
   });
-
-router.get('/' , checkAuthenticated,async (req,res)=>{
-
-    let account=req.user.email;
-    console.log("Logged in as: "+account)
-    try {
-        const users= await User.find()
-        res.json(users)
-    } catch (err) {
-        res.status(500).json({message : err.message})
+*/
+router.post('/login', async (req,res)=>{
+    
+    const user = await User.findOne({ email: req.body.email });
+    if(user===null){
+        console.log("Email does not exist.")
+        res.json({message:"Email does not exist."})
+    }else{
+        //
+        try {
+            if(await bcrypt.compare(req.body.password,user.password)){
+                console.log("Logged in successfully...")
+                jwt.sign({user:user},'secretkey',(err,token)=>{
+                    res.json({
+                        user:user,
+                        token:token
+                    })
+                });
+                
+            }else{
+                console.log("Wrong password.")
+                res.json({message:"Wrong password."})
+            }
+        } catch (error) {
+            res.json(error)
+        }
     }
+    
+});
 
+router.get('/',verifyToken,async(req,res)=>{
+    jwt.verify(req.token,'secretkey',async (err,authData)=>{
+        
+        if(err){
+            res.sendStatus(403)
+        }else{
+            try {
+                const users= await User.find()
+                const response={
+                    currentUser:authData.user,
+                    users:users
+                }
+                res.json(response)
+            } catch (err) {
+                res.status(500).json({message : err.message})
+            }
+        }
+    })
 })
 //GET ALL USERS
-router.get('/:id',checkAuthenticated,getUser,(req,res)=>{
-    res.json(res.user)
+router.get('/:id',verifyToken,getUser,async(req,res)=>{
+    jwt.verify(req.token,'secretkey',async (err,authData)=>{
+        if(err){
+            res.sendStatus(403) 
+        }else{
+            res.json(res.user)
+        } 
+    })
 })
 //GET SPECIFIC USER
-router.get('/:id/posts',getUser,(req,res)=>{
-    res.json(res.user.posts)
+router.get('/:id/posts',verifyToken,getUser,async(req,res)=>{
+    jwt.verify(req.token,'secretkey',async (err,authData)=>{
+        if(err){
+            res.sendStatus(403) 
+        }else{
+            res.json(res.user.posts)
+        } 
+    })
+    
 })
 //GET ALL POSTS FROM A USER
-router.get('/:id/posts/:postIndex',checkAuthenticated,getUser,(req,res)=>{
-    let postID=req.params.postIndex
-    console.log(postID)
-    res.json(res.user.posts[postID])
+router.get('/:id/posts/:postIndex',verifyToken,getUser,async(req,res)=>{
+    jwt.verify(req.token,'secretkey',async (err,authData)=>{
+        if(err){
+            res.sendStatus(403) 
+        }else{
+            let postID=req.params.postIndex
+            console.log(postID)
+            res.json(res.user.posts[postID])
+        } 
+    })
+    
 })
 //GET SPECIFIC POST
-router.patch('/:id/posts/:postIndex/newComment',checkAuthenticated, getUser,async(req,res)=>{
+router.patch('/:id/posts/:postIndex/newComment', verifyToken,getUser,async(req,res)=>{
     
     let postID=req.params.postIndex
     console.log(res.user.posts)
@@ -187,7 +256,7 @@ router.post('/register', async (req,res)=>{
 })
 //CREATE NEW USER/SIGN-UP
 
-router.patch('/:id', checkAuthenticated,getUser, async (req,res)=>{
+router.patch('/:id',verifyToken,getUser, async (req,res)=>{
     if(req.body.email!=null){
         res.user.email=req.body.email
     }
@@ -203,7 +272,7 @@ router.patch('/:id', checkAuthenticated,getUser, async (req,res)=>{
     }
 })
 //UPDATE USER CREDENTIALS
-router.patch('/:id/newPost',checkAuthenticated,getUser, async (req,res)=>{
+router.patch('/:id/newPost',verifyToken,getUser, async (req,res)=>{
     
     console.log("----------------------------------")
     console.log("PATCHING "+req.params.id)
@@ -238,7 +307,7 @@ router.patch('/:id/newPost',checkAuthenticated,getUser, async (req,res)=>{
     }
 })
 //ADD POST
-router.delete('/:id/posts/:postIndex',checkAuthenticated,getUser, async (req,res)=>{
+router.delete('/:id/posts/:postIndex',verifyToken,getUser, async (req,res)=>{
     
     let postID=req.params.postIndex
     
@@ -256,7 +325,7 @@ router.delete('/:id/posts/:postIndex',checkAuthenticated,getUser, async (req,res
     }
 })
 //DELETE POST
-router.delete('/:id',checkAuthenticated,getUser, async(req,res)=>{
+router.delete('/:id',verifyToken,getUser, async(req,res)=>{
    try {
        await res.user.remove()
        res.json({message: 'Deleted User'})
@@ -265,6 +334,19 @@ router.delete('/:id',checkAuthenticated,getUser, async(req,res)=>{
    }
 })
 //DELETE USER
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 async function getUser(req,res,next){
     let user
@@ -295,7 +377,7 @@ function verifyToken(req,res,next){
 }
 
 function checkAuthenticated(req,res,next){
-  
+    console.log("THE USER IS "+req.user)
     if(req.isAuthenticated()){
         return next()
     }

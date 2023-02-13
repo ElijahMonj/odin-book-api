@@ -29,10 +29,10 @@ const userSchema=new mongoose.Schema({
         type: String,
         required:true
     },
-    friends:{
+    following:{
         type: Array,
     },
-    friendRequests:{
+    followers:{
         type: Array,
     },
     posts:{
