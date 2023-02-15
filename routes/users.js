@@ -150,8 +150,12 @@ router.get('/',verifyToken,async(req,res)=>{
         }else{
             try {
                 const users= await User.find()
+                
+                
+                const loggedUser=users.find(x => x._id.toString().split('"')[0] ==authData.user._id)
+               
                 const response={
-                    currentUser:authData.user,
+                    currentUser:loggedUser,
                     users:users
                 }
                 res.json(response)
@@ -173,7 +177,7 @@ router.get('/:id',verifyToken,getUser,async(req,res)=>{
 })
 
 //GET SPECIFIC USER
-router.patch('/addfollowing/:id/:tofollow/',getUser,async(req,res)=>{
+router.patch('/addfollowing/:id/:tofollow/',verifyToken,getUser,async(req,res)=>{
     jwt.verify(req.token,'secretkey',async (err,authData)=>{
         if(err){
             res.sendStatus(403) 
@@ -198,7 +202,7 @@ router.patch('/addfollowing/:id/:tofollow/',getUser,async(req,res)=>{
         } 
     })
 })
-router.patch('/addfollowers/:id/:followby/',getUser,async(req,res)=>{
+router.patch('/addfollowers/:id/:followby/',verifyToken,getUser,async(req,res)=>{
     jwt.verify(req.token,'secretkey',async (err,authData)=>{
         if(err){
             res.sendStatus(403) 
