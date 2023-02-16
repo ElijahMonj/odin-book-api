@@ -228,6 +228,68 @@ router.patch('/addfollowers/:id/:followby/',verifyToken,getUser,async(req,res)=>
     })
 })
 //FOLLOW
+router.patch('/removefollowing/:id/:toremove/',verifyToken,getUser,async(req,res)=>{
+    
+    jwt.verify(req.token,'secretkey',async (err,authData)=>{
+        if(err){
+            res.sendStatus(403) 
+        }else{    
+
+            if(req.body.toremove!=null){
+                if(res.user.following.includes(req.body.toremove)){
+                    console.log("Unfollowing "+req.body.toremove)   
+                    const index = res.user.following.indexOf(req.body.toremove);
+                    if (index > -1) { 
+                        res.user.following.splice(index, 1); 
+                    }
+                    console.log(res.user.following)
+                }else{
+                    console.log("Already removed.")
+                }  
+                try {
+                    const updatedUser = await res.user.save()
+                    res.json(updatedUser)
+                } catch (err) {
+                    res.status(400).json({message: err.message})
+                }
+            }
+        } 
+    })
+    
+    
+})
+router.patch('/removefollowers/:id/:removeby/',verifyToken,getUser,async(req,res)=>{
+    
+    jwt.verify(req.token,'secretkey',async (err,authData)=>{
+        if(err){
+            res.sendStatus(403) 
+        }else{    
+
+            if(req.body.removeby!=null){
+            
+                if(res.user.followers.includes(req.body.removeby)){
+                    console.log("Removing follower: "+req.body.removeby)   
+                    const index = res.user.followers.indexOf(req.body.removeby);
+                    if (index > -1) { 
+                        res.user.followers.splice(index, 1); 
+                    }
+                    console.log(res.user.followers)
+                }else{
+                    console.log("Already removed.")
+                }  
+                try {
+                    const updatedUser = await res.user.save()
+                    res.json(updatedUser)
+                } catch (err) {
+                    res.status(400).json({message: err.message})
+                }
+            }
+        } 
+    })
+   
+    
+})
+//REMOVE FOLLOW
 router.get('/:id/posts',verifyToken,getUser,async(req,res)=>{
     jwt.verify(req.token,'secretkey',async (err,authData)=>{
         if(err){

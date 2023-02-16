@@ -91,3 +91,12 @@ Content-Type: application/json
 {
     "tofollow":"63ea0028a3fdf1719a0b5f85"
 }
+
+###
+
+PATCH http://localhost:3002/users/removefollowers/63ec5d7762a31f7f1fd1a609/63ec5d7762a31f7f1fd1a609
+Content-Type: application/json
+
+{
+    "removeby":"63ec5d7762a31f7f1fd1a609"
+}
