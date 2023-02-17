@@ -408,7 +408,8 @@ router.patch('/:id/newPost',verifyToken,getUser, async (req,res)=>{
             date: req.body.date,
             caption: req.body.caption,
             comments: req.body.comments,
-            likes: req.body.likes        
+            likes: req.body.likes,
+            picture: "none"        
         }
     }else{
         newPost = {
