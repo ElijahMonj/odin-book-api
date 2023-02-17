@@ -401,15 +401,26 @@ router.patch('/:id/newPost',verifyToken,getUser, async (req,res)=>{
     console.log(req.body.likes)
     console.log(req.body.picture)
     console.log("-----------------------------------")
-    
-    const newPost = {
-        author: req.body.author,
-        date: req.body.date,
-        caption: req.body.caption,
-        comments: req.body.comments,
-        likes: req.body.likes,
-        picture: req.body.picture
+    let newPost;
+    if((req.body.picture===null)||req.body.picture===undefined){
+        newPost = {
+            author: req.body.author,
+            date: req.body.date,
+            caption: req.body.caption,
+            comments: req.body.comments,
+            likes: req.body.likes        
+        }
+    }else{
+        newPost = {
+            author: req.body.author,
+            date: req.body.date,
+            caption: req.body.caption,
+            comments: req.body.comments,
+            likes: req.body.likes,
+            picture: req.body.picture
+        }
     }
+    
     console.log(res.user.posts)
     let currentPosts=res.user.posts;
     currentPosts.push(newPost);
