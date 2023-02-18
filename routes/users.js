@@ -391,50 +391,49 @@ router.patch('/:id',verifyToken,getUser, async (req,res)=>{
 })
 //UPDATE USER CREDENTIALS
 router.patch('/:id/newPost',verifyToken,getUser, async (req,res)=>{
+    jwt.verify(req.token,'secretkey',async (err,authData)=>{
+        if(err){
+            res.sendStatus(403) 
+        }else{
+            let newPost;
+            if((req.body.picture===null)||req.body.picture===undefined){
+                newPost = {
+                    author: req.body.author,
+                    date: req.body.date,
+                    caption: req.body.caption,
+                    comments: req.body.comments,
+                    likes: req.body.likes,
+                    picture: "none",  
+                    id:Date.now()      
+                }
+            }else{
+                newPost = {
+                    author: req.body.author,
+                    date: req.body.date,
+                    caption: req.body.caption,
+                    comments: req.body.comments,
+                    likes: req.body.likes,
+                    picture: req.body.picture,
+                    id:Date.now()
+                }
+            }
+            
+           
+            let currentPosts=res.user.posts;
+            currentPosts.unshift(newPost);
+            
+            
+            res.user.posts=currentPosts;
+        
+            try {
+                const updatedUser = await res.user.save()
+                res.json(updatedUser)
+            } catch (err) {
+                res.status(400).json({message: err.message})
+            }
+        } 
+    })
     
-    console.log("----------------------------------")
-    console.log("PATCHING "+req.params.id)
-    console.log(req.body.author)
-    console.log(req.body.date)
-    console.log(req.body.caption)
-    console.log(req.body.comments)
-    console.log(req.body.likes)
-    console.log(req.body.picture)
-    console.log("-----------------------------------")
-    let newPost;
-    if((req.body.picture===null)||req.body.picture===undefined){
-        newPost = {
-            author: req.body.author,
-            date: req.body.date,
-            caption: req.body.caption,
-            comments: req.body.comments,
-            likes: req.body.likes,
-            picture: "none"        
-        }
-    }else{
-        newPost = {
-            author: req.body.author,
-            date: req.body.date,
-            caption: req.body.caption,
-            comments: req.body.comments,
-            likes: req.body.likes,
-            picture: req.body.picture
-        }
-    }
-    
-    console.log(res.user.posts)
-    let currentPosts=res.user.posts;
-    currentPosts.push(newPost);
-    
-    console.log("New Post "+currentPosts)
-    res.user.posts=currentPosts;
-
-    try {
-        const updatedUser = await res.user.save()
-        res.json(updatedUser)
-    } catch (err) {
-        res.status(400).json({message: err.message})
-    }
 })
 //ADD POST
 router.delete('/:id/posts/:postIndex',verifyToken,getUser, async (req,res)=>{
@@ -485,10 +484,12 @@ async function getUser(req,res,next){
 
 function verifyToken(req,res,next){
     const bearerHeader=req.headers['authorization'];
+    
     if(typeof bearerHeader!=='undefined'){
         const bearer=bearerHeader.split(" ");
         const bearerToken=bearer[1]
         req.token=bearerToken
+        
         next()
     }else{
         res.sendStatus(403);
