@@ -314,15 +314,16 @@ router.get('/:id/posts/:postIndex',verifyToken,getUser,async(req,res)=>{
     
 })
 //GET SPECIFIC POST
-router.patch('/:id/posts/:postIndex/newComment', verifyToken,getUser,async(req,res)=>{
+router.patch('/:id/posts/:postIndex/newComment',getUser,async(req,res)=>{
     
     let postID=req.params.postIndex
     console.log(res.user.posts)
     
     const newComment={
-        name:req.body.name,
+        author_id:req.body.author_id,
         date:req.body.date,
-        content:req.body.content
+        content:req.body.content,
+        comment_id:Date.now()
     }
    
     let currentPosts=res.user.posts;

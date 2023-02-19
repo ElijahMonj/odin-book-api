@@ -70,13 +70,13 @@ DELETE http://localhost:3002/users/63d1c5ccef704ae2f5298c94/posts/0
 
 ###
 
-PATCH http://localhost:3002/users/63d1c5ccef704ae2f5298c94/posts/0/newComment
+PATCH http://localhost:3002/users/63ef500bf15ffdf1497aa062/posts/0/newComment
 Content-Type: application/json
 
 {
-    "name":"Trisha M.",
+    "author_id":"63e49ce25fa6ad8ead6edddb",
     "date":"Jan 14 9:04 AM",
-    "content":"Wow!!!"
+    "content":"TF XD!!!"
 }
 
 ###
