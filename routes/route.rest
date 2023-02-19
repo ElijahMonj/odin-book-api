@@ -70,7 +70,7 @@ DELETE http://localhost:3002/users/63d1c5ccef704ae2f5298c94/posts/0
 
 ###
 
-PATCH http://localhost:3002/users/63ef500bf15ffdf1497aa062/posts/0/newComment
+PATCH http://localhost:3002/users/63ef500bf15ffdf1497aa062/posts/1676794970493/newComment
 Content-Type: application/json
 
 {

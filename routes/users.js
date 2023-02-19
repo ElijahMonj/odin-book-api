@@ -325,11 +325,12 @@ router.patch('/:id/posts/:postIndex/newComment',getUser,async(req,res)=>{
         content:req.body.content,
         comment_id:Date.now()
     }
-   
+    
     let currentPosts=res.user.posts;
-    console.log(currentPosts[postID].comments)
-    currentPosts[postID].comments.unshift(newComment)
-    console.log(currentPosts[postID].comments)
+    var index = currentPosts.findIndex(item => item.id === +postID)
+
+    currentPosts[index].comments.unshift(newComment)
+    console.log(currentPosts[index].comments)
     console.log("---------------------------------")
     console.log(currentPosts)
     
@@ -339,7 +340,7 @@ router.patch('/:id/posts/:postIndex/newComment',getUser,async(req,res)=>{
         res.user.markModified('posts')
         const updatedUser = await res.user.save()
         res.json(updatedUser)
-        console.log(res.user.posts[postID].comments)
+        
     } catch (err) {
         res.status(400).json({message: err.message})
     }
