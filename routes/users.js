@@ -391,6 +391,19 @@ router.patch('/:id',verifyToken,getUser, async (req,res)=>{
         res.status(400).json({message: err.message})
     }
 })
+
+router.patch('/:id/bio',getUser, async (req,res)=>{
+    if(req.body.bio!=null){
+        res.user.bio=req.body.bio
+    }
+
+    try {
+        const updatedUser = await res.user.save()
+        res.json(updatedUser)
+    } catch (err) {
+        res.status(400).json({message: err.message})
+    }
+})
 //UPDATE USER CREDENTIALS
 router.patch('/:id/newPost',verifyToken,getUser, async (req,res)=>{
     jwt.verify(req.token,'secretkey',async (err,authData)=>{

@@ -43,6 +43,15 @@ Content-Type: application/json
 
 ###
 
+PATCH http://localhost:3002/users/63e49ce25fa6ad8ead6edddb/bio
+Content-Type: application/json
+
+{
+    "bio":"I created this shit."
+}
+
+###
+
 GET http://localhost:3002/users/63d1c5ccef704ae2f5298c94/posts
 
 ###
