@@ -228,7 +228,7 @@ router.patch('/addfollowers/:id/:followby/',verifyToken,getUser,async(req,res)=>
                         user_id: req.params.followby,
                         content: "followed you.",
                         date:postDate,
-                        notificationID:(Date.now() + Math.random()).toString(36)
+                        notificationID:Date.now()
                     }
                     res.user.notifications.push(newNotification)
                 }  
@@ -338,7 +338,7 @@ router.patch('/:id/posts/:postIndex/newComment',getUser,async(req,res)=>{
         author_id:req.body.author_id,
         date:req.body.date,
         content:req.body.content,
-        comment_id:(Date.now() + Math.random()).toString(36)
+        comment_id:Date.now() 
     }
     
     let currentPosts=res.user.posts;
@@ -434,7 +434,7 @@ router.patch('/:id/newPost',verifyToken,getUser, async (req,res)=>{
                     comments: req.body.comments,
                     likes: req.body.likes,
                     picture: "none",  
-                    id:(Date.now() + Math.random()).toString(36)
+                    id:Date.now() 
                 }
             }else{
                 newPost = {
@@ -444,7 +444,7 @@ router.patch('/:id/newPost',verifyToken,getUser, async (req,res)=>{
                     comments: req.body.comments,
                     likes: req.body.likes,
                     picture: req.body.picture,
-                    id:(Date.now() + Math.random()).toString(36)
+                    id:Date.now()
                 }
             }
             
