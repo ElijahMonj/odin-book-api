@@ -216,6 +216,21 @@ router.patch('/addfollowers/:id/:followby/',verifyToken,getUser,async(req,res)=>
                     let currentFollowers=res.user.followers
                     currentFollowers.push(req.body.followby)
                     res.user.followers=currentFollowers
+
+                    const d = new Date();
+                    const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+                    let date=month[d.getMonth()]+" "+d.getDate()+" "+d.getFullYear()
+                    let time=d.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+
+                    const postDate=date+", "+time
+
+                    const newNotification ={
+                        user_id: req.params.followby,
+                        content: "followed you.",
+                        date:postDate,
+                        notificationID:(Date.now() + Math.random()).toString(36)
+                    }
+                    res.user.notifications.push(newNotification)
                 }  
                 try {
                     const updatedUser = await res.user.save()
@@ -323,7 +338,7 @@ router.patch('/:id/posts/:postIndex/newComment',getUser,async(req,res)=>{
         author_id:req.body.author_id,
         date:req.body.date,
         content:req.body.content,
-        comment_id:Date.now()
+        comment_id:(Date.now() + Math.random()).toString(36)
     }
     
     let currentPosts=res.user.posts;
@@ -361,7 +376,8 @@ router.post('/register', async (req,res)=>{
             bio:"Add Bio",
             friends: [],
             friendRequests:[],
-            posts: []
+            posts: [],
+            notifications:[]
         })
         try {
             const newUser =await user.save()
@@ -396,7 +412,6 @@ router.patch('/:id/bio',getUser, async (req,res)=>{
     if(req.body.bio!=null){
         res.user.bio=req.body.bio
     }
-
     try {
         const updatedUser = await res.user.save()
         res.json(updatedUser)
@@ -419,7 +434,7 @@ router.patch('/:id/newPost',verifyToken,getUser, async (req,res)=>{
                     comments: req.body.comments,
                     likes: req.body.likes,
                     picture: "none",  
-                    id:Date.now()      
+                    id:(Date.now() + Math.random()).toString(36)
                 }
             }else{
                 newPost = {
@@ -429,7 +444,7 @@ router.patch('/:id/newPost',verifyToken,getUser, async (req,res)=>{
                     comments: req.body.comments,
                     likes: req.body.likes,
                     picture: req.body.picture,
-                    id:Date.now()
+                    id:(Date.now() + Math.random()).toString(36)
                 }
             }
             
