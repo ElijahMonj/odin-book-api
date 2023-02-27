@@ -372,7 +372,7 @@ router.post('/register', async (req,res)=>{
             email:req.body.email,
             password: hashedPassword,
             birthDay:req.body.birthDay,
-            defaultProfile: "https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg",
+            defaultProfile: "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=740&t=st=1677479318~exp=1677479918~hmac=7a802281db6d54cffcd402081ad9595d18a438a10cb89f88ddf4b389796ff8e0",
             bio:"Add Bio",
             friends: [],
             friendRequests:[],
