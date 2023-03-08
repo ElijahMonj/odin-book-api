@@ -275,7 +275,7 @@ app.patch('/:id/posts/:postIndex/newComment',checkAuthenticated,getUser,async(re
 //WRITE NEW COMMENT
 
 
-app.patch('/:id',checkAuthenticated,getUser, async (req,res)=>{
+app.patch('/:id',getUser, async (req,res)=>{
   if(req.body.email!=null){
       res.user.email=req.body.email
   }
@@ -438,7 +438,35 @@ app.patch('/:id/changeName',checkAuthenticated,getUser, async(req,res)=>{
 })
 
 
+app.patch('/:id/changePassword',checkAuthenticated,getUser, async(req,res)=>{
+  console.log("Current password: " +req.body.password)
+  console.log("Current password: " +req.body.newPassword)
+  try {
+    if(await bcrypt.compare(req.body.password,res.user.password)){
 
+
+      if(req.body.newPassword!=null){
+        let hashedPassword = await bcrypt.hash(req.body.newPassword,10)
+        res.user.password=hashedPassword
+      }
+      
+      try {
+        const updatedUser = await res.user.save()
+        res.status(201).json(updatedUser)
+      } catch (err) {
+        res.status(400).json({message: err.message})
+      }
+
+      
+    }else{
+        console.log("Wrong password.")
+        res.status(202).json({message: "Wrong password."})
+    }
+  } catch (error) {
+      res.json(error)
+  }
+
+})
 
 
 
