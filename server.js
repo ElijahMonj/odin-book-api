@@ -403,6 +403,40 @@ app.patch('/:id/changeName',checkAuthenticated,getUser, async(req,res)=>{
 
  })
 
+ app.patch('/:id/changeEmail',checkAuthenticated,getUser, async(req,res)=>{
+
+  try {
+    if(await bcrypt.compare(req.body.password,res.user.password)){
+
+      if(req.body.email!=null){
+        User.findOne({ email: req.body.email }, async (err, doc) => {
+          if (err) throw err;
+          if (doc) res.status(202).json({message: "Email already in use."}); 
+          if (!doc) {
+            console.log("changeing email...")
+            res.user.email=req.body.email;
+            try {
+              const updatedUser = await res.user.save()
+              res.status(201).json(updatedUser)
+            } catch (err) {
+              res.status(400).json({message: err.message})
+            }
+          }
+        });
+             
+      }
+      //res.user.password=req.body.password
+
+    }else{
+        console.log("Wrong password.")
+        res.status(202).json({message: "Wrong password."})     
+    }
+  } catch (error) {
+      res.json(error)
+  }
+
+})
+
 
 
 
