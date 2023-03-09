@@ -91,7 +91,7 @@ app.post("/register", async (req, res) => {
           email:req.body.email,
           password: hashedPassword,
           birthDay:req.body.birthDay,
-          defaultProfile: "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=740&t=st=1677479318~exp=1677479918~hmac=7a802281db6d54cffcd402081ad9595d18a438a10cb89f88ddf4b389796ff8e0",
+          defaultProfile: "https://thumbs.dreamstime.com/b/default-avatar-profile-vector-user-profile-default-avatar-profile-vector-user-profile-profile-179376714.jpg",
           bio:"Add Bio",
           friends: [],
           friendRequests:[],
