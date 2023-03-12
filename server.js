@@ -29,10 +29,7 @@ mongoose.connect(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
-  cors({
-    origin: process.env.CLIENT_URL, // <-- location of the react app were connecting to
-    credentials: true,
-  })
+  cors()
 );
 app.use(
   session({
