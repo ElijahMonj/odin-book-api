@@ -33,6 +33,10 @@ app.use(
 );
 app.use(
   session({
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection,
+      touchAfter: 24 * 3600 // time period in seconds
+    }),
     secret: "secretcode",
     resave: true,
     saveUninitialized: true,
