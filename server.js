@@ -28,7 +28,12 @@ mongoose.connect(
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL, // <-- location of the react app were connecting to
+    credentials: true,
+  })
+);
 app.use(
   session({
     secret: "secretcode",
@@ -530,6 +535,6 @@ function checkAuthenticated(req,res,next){
   res.json({username : "Please Login"})
 }
 //Start Server
-app.listen(4000, () => {
+app.listen(process.env.PORT || 4000, () => {
   console.log("Server Has Started");
 });
