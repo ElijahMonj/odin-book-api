@@ -531,8 +531,10 @@ function checkAuthenticated(req,res,next){
     
   if(req.isAuthenticated()){
       return next()
+  }else{
+    res.json({username : "Please Login"})
   }
-  res.json({username : "Please Login"})
+ 
 }
 //Start Server
 app.listen(process.env.PORT || 4000, () => {
